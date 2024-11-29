@@ -10,11 +10,11 @@ error FundMe_NotOwner();
 contract FundMe {
     using PriceConverter for uint256;
 
-    mapping(address => uint256) public addressToAmountFunded;
-    address[] public funders;
+    mapping(address => uint256) private s_addressToAmountFunded;
+    address[] private s_funders;
 
     // Could we make this constant?  /* hint: no! We should make it immutable! */
-    address public /* immutable */ i_owner;
+    address private /* immutable */ i_owner;
     uint256 public constant MINIMUM_USD = 5e14;
     address public immutable i_usdPriceAddress;
 
@@ -26,8 +26,8 @@ contract FundMe {
     function fund() public payable {
         require(msg.value.getConversionRate(i_usdPriceAddress) >= MINIMUM_USD, "You need to spend more ETH!");
         // require(PriceConverter.getConversionRate(msg.value) >= MINIMUM_USD, "You need to spend more ETH!");
-        addressToAmountFunded[msg.sender] += msg.value;
-        funders.push(msg.sender);
+        s_addressToAmountFunded[msg.sender] += msg.value;
+        s_funders.push(msg.sender);
     }
 
     function getVersion() public view returns (uint256) {
@@ -42,11 +42,11 @@ contract FundMe {
     }
 
     function withdraw() public onlyOwner {
-        for (uint256 funderIndex = 0; funderIndex < funders.length; funderIndex++) {
-            address funder = funders[funderIndex];
-            addressToAmountFunded[funder] = 0;
+        for (uint256 funderIndex = 0; funderIndex < s_funders.length; funderIndex++) {
+            address funder = s_funders[funderIndex];
+            s_addressToAmountFunded[funder] = 0;
         }
-        funders = new address[](0);
+        s_funders = new address[](0);
         // // transfer
         // payable(msg.sender).transfer(address(this).balance);
 
@@ -76,6 +76,22 @@ contract FundMe {
 
     receive() external payable {
         fund();
+    }
+
+    /*
+        Pure / View Function
+    */
+
+    function getAddressToAmountFunded(address fundAddress) public view returns (uint256) {
+        return s_addressToAmountFunded[fundAddress];
+    }
+
+    function getFunderAddress(uint256 index) public view returns (address) {
+        return s_funders[index];
+    }
+
+    function getOwner() public view returns (address) {
+        return i_owner;
     }
 }
 

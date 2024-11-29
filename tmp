@@ -1,0 +1,55 @@
+No files changed, compilation skipped
+
+Ran 1 test for test/FundMeTest.t.sol:FundMeTest
+[PASS] testNotOwnerWithdraw() (gas: 103738)
+Logs:
+  0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38
+
+Traces:
+  [2898232] FundMeTest::setUp()
+    ├─ [1412775] → new DeployFundMe@0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f
+    │   └─ ← [Return] 6946 bytes of code
+    ├─ [1443387] DeployFundMe::run()
+    │   ├─ [968023] → new <unknown>@0x104fBc016F4bb334D775a19E8A6510109AC63E00
+    │   │   ├─ [0] VM::startBroadcast()
+    │   │   │   └─ ← [Return] 
+    │   │   ├─ [372255] → new <unknown>@0x34A1D3fff3958843C43aD80F30b94c510645C316
+    │   │   │   └─ ← [Return] 1082 bytes of code
+    │   │   ├─ [0] VM::stopBroadcast()
+    │   │   │   └─ ← [Return] 
+    │   │   └─ ← [Return] 2131 bytes of code
+    │   ├─ [381] 0x104fBc016F4bb334D775a19E8A6510109AC63E00::activeNetworkConfig() [staticcall]
+    │   │   └─ ← [Return] 0x34A1D3fff3958843C43aD80F30b94c510645C316
+    │   ├─ [0] VM::startBroadcast()
+    │   │   └─ ← [Return] 
+    │   ├─ [408011] → new <unknown>@0x90193C961A926261B756D1E5bb255e67ff9498A1
+    │   │   └─ ← [Return] 1926 bytes of code
+    │   ├─ [0] VM::stopBroadcast()
+    │   │   └─ ← [Return] 
+    │   └─ ← [Return] 0x90193C961A926261B756D1E5bb255e67ff9498A1
+    ├─ [0] VM::deal(USER: [0xF921F4FA82620d8D2589971798c51aeD0C02c81a], 10000000000000000000 [1e19])
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+  [103738] FundMeTest::testNotOwnerWithdraw()
+    ├─ [0] VM::startPrank(USER: [0xF921F4FA82620d8D2589971798c51aeD0C02c81a])
+    │   └─ ← [Return] 
+    ├─ [79221] 0x90193C961A926261B756D1E5bb255e67ff9498A1::fund{value: 1000000000000000}()
+    │   ├─ [8993] 0x34A1D3fff3958843C43aD80F30b94c510645C316::latestRoundData() [staticcall]
+    │   │   └─ ← [Return] 1, 200000000000 [2e11], 1, 1, 1
+    │   └─ ← [Stop] 
+    ├─ [2381] 0x90193C961A926261B756D1E5bb255e67ff9498A1::i_owner() [staticcall]
+    │   └─ ← [Return] DefaultSender: [0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38]
+    ├─ [0] console::log(DefaultSender: [0x1804c8AB1F12E6bbf3894d4083f33e07309d1f38]) [staticcall]
+    │   └─ ← [Stop] 
+    ├─ [0] VM::expectRevert(custom error 0xf4844814)
+    │   └─ ← [Return] 
+    ├─ [392] 0x90193C961A926261B756D1E5bb255e67ff9498A1::withdraw()
+    │   └─ ← [Revert] FundMe_NotOwner()
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 7.09ms (812.88µs CPU time)
+
+Ran 1 test suite in 706.51ms (7.09ms CPU time): 1 tests passed, 0 failed, 0 skipped (1 total tests)
