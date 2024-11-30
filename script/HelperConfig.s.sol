@@ -7,18 +7,18 @@ import {MockV3Aggregator} from "../lib/chainlink-brownie-contracts/contracts/src
 contract HelperConfig is Script {
     NetworkConfig public activeNetworkConfig;
     uint8 DECIMAL = 8;
-    int256 INITIAL_ETH_USDPRICE = 2000e8;
-    uint256 SEPOLIA_BLOCK_CHAINID = 11155111;
-    uint256 MAINNETETH_BLOCK_CHAINID = 1;
+    int256 INITIAL_ETH_USD_PRICE = 2000e8;
+    uint256 SEPOLIA_BLOCK_CHAIN_ID = 11155111;
+    uint256 MAIN_NET_ETH_BLOCK_CHAIN_ID = 1;
 
     struct NetworkConfig {
         address USDPriceAddress;
     }
 
     constructor() {
-        if (block.chainid == SEPOLIA_BLOCK_CHAINID) {
+        if (block.chainid == SEPOLIA_BLOCK_CHAIN_ID) {
             activeNetworkConfig = getSepoliaNetConfig();
-        } else if (block.chainid == MAINNETETH_BLOCK_CHAINID) {
+        } else if (block.chainid == MAIN_NET_ETH_BLOCK_CHAIN_ID) {
             activeNetworkConfig = getMainNetETHNetConfig();
         } else {
             activeNetworkConfig = getOrCreateAnvilNetConfig();
@@ -54,7 +54,7 @@ contract HelperConfig is Script {
         vm.startBroadcast();
         MockV3Aggregator mockV3Aggregator = new MockV3Aggregator(
             DECIMAL,
-            INITIAL_ETH_USDPRICE
+            INITIAL_ETH_USD_PRICE
         );
         vm.stopBroadcast();
 

@@ -2,15 +2,16 @@
 pragma solidity ^0.8.18;
 
 import {Test, console} from "forge-std/Test.sol";
-import {FundMe} from "../src/FundMe.sol";
-import {DeployFundMe} from "../script/DeployFundMe.s.sol";
+import {FundMe} from "../../src/FundMe.sol";
+import {DeployFundMe} from "../../script/DeployFundMe.s.sol";
 
 contract FundMeTest is Test {
     FundMe fundMe;
+
+    address USER_ADDRESS = makeAddr("USER");
     uint256 constant INPUT_FUND_AMOUNT = 0.001 ether;
     uint256 constant START_BALANCE = 10 ether;
-    address USER_ADDRESS = makeAddr("USER");
-    uint256 tmp = 0;
+    uint256 constant GAS_PRICE = 1;
 
     function setUp() external {
         fundMe = new DeployFundMe().run();
@@ -54,11 +55,13 @@ contract FundMeTest is Test {
     {
         fundMe.fund{value: INPUT_FUND_AMOUNT}();
         address funder = fundMe.getFunderAddress(0);
-        console.log(tmp);
+        console.log(address(fundMe));
+        console.log(msg.sender);
+        console.log(fundMe.getOwner());
         assertEq(funder, USER_ADDRESS);
     }
 
-    function testNotOwnerWithdraw()
+    function testOnlyOwnerWithdraw()
         public
         M_changeTXSender(USER_ADDRESS)
         M_funded
@@ -86,14 +89,56 @@ contract FundMeTest is Test {
         assertEq(startFunderBalance + startOwnerBalance, endOwnerBalance);
     }
 
+    function testWithdrawWithMultipleFunder() public {
+        uint160 numberOfFunders = 10;
+        uint160 startIndexOfFunders = 0;
+        for (uint160 i = startIndexOfFunders; i < numberOfFunders; i++) {
+            hoax(address(i), INPUT_FUND_AMOUNT);
+            fundMe.fund{value: INPUT_FUND_AMOUNT}();
+        }
+        uint256 startingOwnerBalance = fundMe.getOwner().balance;
+        uint256 startingFunderBalance = address(fundMe).balance;
+
+        vm.prank(fundMe.getOwner());
+        fundMe.withdraw();
+
+        uint256 endingOwnerBalance = fundMe.getOwner().balance;
+        uint256 endingFunderBalance = address(fundMe).balance;
+        assertEq(endingFunderBalance, 0);
+        assertEq(
+            startingOwnerBalance + startingFunderBalance,
+            endingOwnerBalance
+        );
+    }
+
+    function testWithdrawWithMultipleFunderCheaperGas() public {
+        uint160 numberOfFunders = 10;
+        uint160 startIndexOfFunders = 0;
+        for (uint160 i = startIndexOfFunders; i < numberOfFunders; i++) {
+            hoax(address(i), INPUT_FUND_AMOUNT);
+            fundMe.fund{value: INPUT_FUND_AMOUNT}();
+        }
+        uint256 startingOwnerBalance = fundMe.getOwner().balance;
+        uint256 startingFunderBalance = address(fundMe).balance;
+
+        vm.prank(fundMe.getOwner());
+        fundMe.cheaperWithdraw();
+
+        uint256 endingOwnerBalance = fundMe.getOwner().balance;
+        uint256 endingFunderBalance = address(fundMe).balance;
+        assertEq(endingFunderBalance, 0);
+        assertEq(
+            startingOwnerBalance + startingFunderBalance,
+            endingOwnerBalance
+        );
+    }
+
     /*
     Modifiers
     */
     modifier M_changeTXSender(address targetAddress) {
         vm.startPrank(targetAddress);
         _;
-
-        
         vm.stopPrank();
     }
 
