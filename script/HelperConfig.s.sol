@@ -26,21 +26,11 @@ contract HelperConfig is Script {
     }
 
     function getSepoliaNetConfig() public pure returns (NetworkConfig memory) {
-        return
-            NetworkConfig({
-                USDPriceAddress: 0x694AA1769357215DE4FAC081bf1f309aDC325306
-            });
+        return NetworkConfig({USDPriceAddress: 0x694AA1769357215DE4FAC081bf1f309aDC325306});
     }
 
-    function getMainNetETHNetConfig()
-        public
-        pure
-        returns (NetworkConfig memory)
-    {
-        return
-            NetworkConfig({
-                USDPriceAddress: 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419
-            });
+    function getMainNetETHNetConfig() public pure returns (NetworkConfig memory) {
+        return NetworkConfig({USDPriceAddress: 0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419});
     }
 
     function getOrCreateAnvilNetConfig() public returns (NetworkConfig memory) {
@@ -52,10 +42,7 @@ contract HelperConfig is Script {
         // 2. Return mock address
 
         vm.startBroadcast();
-        MockV3Aggregator mockV3Aggregator = new MockV3Aggregator(
-            DECIMAL,
-            INITIAL_ETH_USD_PRICE
-        );
+        MockV3Aggregator mockV3Aggregator = new MockV3Aggregator(DECIMAL, INITIAL_ETH_USD_PRICE);
         vm.stopBroadcast();
 
         return NetworkConfig({USDPriceAddress: address(mockV3Aggregator)});
